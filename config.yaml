@@ -14,3 +14,6 @@ thresholds:
 model:
   name: "all-MiniLM-L6-v2"
   use_cuda_if_available: true
+
+multi_threading:
+  num_workers_to_be_used: 10 #Increase this number if you have more resources available ( higher number = more CPU usage = faster)
