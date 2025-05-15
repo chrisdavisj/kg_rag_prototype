@@ -4,6 +4,8 @@ from .threshold import compute_dynamic_threshold
 
 
 def filter_matched_resources(prompt, matched_resources):
+    if not matched_resources:
+        return []
     prompt_embedding = model.encode(
         [prompt], convert_to_tensor=True).to(device)
     res_embeddings = model.encode(
