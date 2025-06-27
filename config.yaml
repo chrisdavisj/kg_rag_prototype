@@ -1,0 +1,16 @@
+# This is a YAML configuration file for a Python application.
+# It contains various settings related to the application, including paths, database configurations,
+# SPARQL endpoint, thresholds for preferred context hops and confidence, and model settings.
+
+sparql:
+  endpoint: "<SPARQL_ENDPOINT_URL>" # Replace with your SPARQL endpoint URL
+
+thresholds:
+  preferred_context_hops: 3
+  min_hops_to_be_explored: 3
+  max_hops_threshold: 5
+  preferred_confidence: 0.23
+
+model:
+  name: "all-MiniLM-L6-v2"
+  use_cuda_if_available: true
