@@ -2,7 +2,7 @@ from typing import Callable
 from sparql.ontology import get_spo
 from filters.similarity import extract_entities, default_similarity_func
 from sparql.hops import find_min_hops_sparql
-from sparql.matcher import match_resources_sparql
+from sparql.matcher import brute_force_match_resources_sparql
 from filters.resource_filter import filter_matched_resources
 from sparql.expander import expand_paths_sparql
 from utils.pruning import prune_context
@@ -20,9 +20,7 @@ def kg_rag_agent(prompt: str, similarity_func: Callable = default_similarity_fun
     min_hops = find_min_hops_sparql(entities)
 
     # ========== Step 3: Brute Force Matching of Resources ==========
-    matched = []
-    for cls in entities:
-        matched += match_resources_sparql(cls, prompt)
+    matched = brute_force_match_resources_sparql(entities, prompt)
 
     # ========== Step 4: Filter Matched Resources ==========
     filtered = filter_matched_resources(prompt, matched)
