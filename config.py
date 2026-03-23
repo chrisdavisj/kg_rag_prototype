@@ -1,5 +1,6 @@
 import yaml
 from pathlib import Path
+from errors import ConfigError
 
 _config_cache = None
 _runtime_overrides = {}
@@ -8,8 +9,21 @@ _runtime_overrides = {}
 def load_config(path: str = "config.yaml") -> dict:
     global _config_cache
     if _config_cache is None:
-        with open(Path(path), "r") as f:
-            _config_cache = yaml.safe_load(f)
+        config_path = Path(path)
+        if not config_path.exists():
+            raise ConfigError(f"Config file not found: {config_path}")
+
+        with open(config_path, "r", encoding="utf-8") as f:
+            loaded = yaml.safe_load(f)
+
+        if loaded is None:
+            loaded = {}
+        if not isinstance(loaded, dict):
+            raise ConfigError(
+                f"Config file must contain a top-level mapping: {config_path}"
+            )
+
+        _config_cache = loaded
     return _config_cache
 
 
@@ -46,3 +60,14 @@ def put(key_path: str, value):
     for key in keys[:-1]:
         cfg = cfg.setdefault(key, {})
     cfg[keys[-1]] = value
+
+
+def get_required(key_path: str):
+    value = get(key_path)
+    if value is None:
+        raise ConfigError(f"Missing required config value: {key_path}")
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped or stripped.startswith("<") and stripped.endswith(">"):
+            raise ConfigError(f"Invalid placeholder config value for: {key_path}")
+    return value

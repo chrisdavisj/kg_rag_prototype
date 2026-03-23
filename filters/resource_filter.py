@@ -12,10 +12,17 @@ def filter_matched_resources(prompt, matched_resources):
         matched_resources, convert_to_tensor=True).to(device)
 
     similarities = util.pytorch_cos_sim(prompt_embedding, res_embeddings)[0]
+    similarity_values = [float(score) for score in similarities]
 
-    min_val, avg_val, max_val, median = min(similarities), sum(
-        similarities)/len(similarities), max(similarities), sorted(similarities)[len(similarities)//2]
+    min_val = min(similarity_values)
+    avg_val = sum(similarity_values) / len(similarity_values)
+    max_val = max(similarity_values)
+    median = sorted(similarity_values)[len(similarity_values)//2]
 
     filteration_threshold = compute_dynamic_threshold(
         min_val, avg_val, max_val, median)
-    return [matched_resources[i] for i, score in enumerate(similarities) if score >= filteration_threshold]
+    return [
+        matched_resources[i]
+        for i, score in enumerate(similarity_values)
+        if score >= filteration_threshold
+    ]
